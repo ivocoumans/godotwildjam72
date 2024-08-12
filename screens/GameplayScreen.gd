@@ -4,7 +4,7 @@ extends Node
 const Tower: PackedScene = preload("res://objects/Tower.tscn")
 
 
-const GRID_SIZE: int = 16
+const GRID_SIZE: int = 32
 
 
 var _health: float = 10.0
@@ -16,6 +16,8 @@ var _is_build_mode: bool = false
 
 onready var viewport_size: Vector2 = get_viewport().size
 onready var camera: Camera2D = $Node2D/Camera
+onready var terrain: TileMap = $Node2D/Terrain
+onready var road: TileMap = $Node2D/Road
 onready var path: Path2D = $Node2D/Path2D
 onready var enemy_spawner: Node = $Node2D/EnemySpawner
 onready var towers: Node = $Node2D/Towers
@@ -28,28 +30,51 @@ onready var ui: CanvasLayer = $UI
 
 func _ready() -> void:
 	camera.position.y = 480
+	_ready_ui()
+	_ready_events()
+	_spawn_wave()
+
+
+func _input(event: InputEvent) -> void:
+	_handle_input_common(event)
+	_handle_input_build_mode(event)
+
+
+func _process(delta: float) -> void:
+	_process_camera(delta)
+	_process_building(delta)
+
+
+func _ready_ui() -> void:
 	ui.set_health(_health)
 	ui.set_gold(_gold)
 	ui.set_enemies(_enemies)
 	ui.set_wave(_wave)
-	_spawn_wave()
+
+
+func _ready_events() -> void:
 	var _error = EventBus.connect("tower_fired", self, "_on_EventBus_tower_fired")
 	_error = EventBus.connect("base_hit", self, "_on_EventBus_base_hit")
 	_error = EventBus.connect("enemy_killed", self, "_on_EventBus_enemy_killed")
 	_error = EventBus.connect("build_mode", self, "_on_EventBus_build_mode")
 
 
-func _input(event) -> void:
+func _handle_input_build_mode(event: InputEvent) -> void:
 	if !_is_build_mode:
 		return
 	
-	# toggle building mode
+	# toggle build mode
 	if event.is_action_pressed("ui_cancel"):
 		_is_build_mode = false
 		placeholder.visible = false
 	
 	# build tower
 	elif event.is_action_pressed("ui_select") and placeholder.cost <= _gold:
+		var x: int = int(placeholder.position.x / GRID_SIZE)
+		var y: int = int(placeholder.position.y / GRID_SIZE)
+		if _is_tile_restricted(x, y):
+			print("restricted")
+			return
 		_gold -= placeholder.cost
 		ui.set_gold(_gold)
 		var tower = Tower.instance()
@@ -57,7 +82,14 @@ func _input(event) -> void:
 		towers.add_child(tower)
 
 
-func _process(delta: float) -> void:
+func _handle_input_common(event: InputEvent) -> void:
+	if _is_build_mode:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		get_tree().quit()
+
+
+func _process_camera(delta: float) -> void:
 	# handle camera movement
 	var camera_direction: Vector2 = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if camera_direction != Vector2.ZERO:
@@ -74,13 +106,16 @@ func _process(delta: float) -> void:
 			zoom_dampen = false
 	if zoom_direction != 0:
 		camera.zoom_inout(zoom_direction * delta, zoom_dampen)
-	
+
+
+func _process_building(_delta: float) -> void:
+	if !_is_build_mode:
+		return
 	# handle building placeholder movement
-	if _is_build_mode:
-		var mouse_position: Vector2 = get_viewport().get_mouse_position()
-		var cell_x: int = int(floor(mouse_position.x / GRID_SIZE))
-		var cell_y: int = int(floor(mouse_position.y / GRID_SIZE))
-		placeholder.position = Vector2(cell_x * GRID_SIZE, cell_y * GRID_SIZE)
+	var mouse_position: Vector2 = get_viewport().get_mouse_position() - get_viewport().canvas_transform.origin
+	var cell_x: int = int(floor(mouse_position.x / GRID_SIZE))
+	var cell_y: int = int(floor(mouse_position.y / GRID_SIZE))
+	placeholder.position = Vector2(cell_x * GRID_SIZE, cell_y * GRID_SIZE)
 
 
 func _spawn_wave() -> void:
@@ -98,6 +133,16 @@ func _spawn_enemies() -> void:
 		enemies.add_child(enemy_path_follow.enemy)
 		_enemies += 1
 	ui.set_enemies(_enemies)
+
+
+func _is_tile_restricted(x: int, y: int) -> bool:
+	if terrain.get_cell(x, y) > 0 or road.get_cell(x, y) >= 0:
+		return true
+	for x_offset in 3:
+		for y_offset in 3:
+			if road.get_cell(x - 1 + x_offset, y - 1 + y_offset) >= 0:
+				return true
+	return false
 
 
 func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, amount: int = 1) -> void:

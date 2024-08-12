@@ -3,6 +3,7 @@ extends Node2D
 
 export (bool) var show_radius: bool = false
 export (float) var fire_rate: float = 0.5
+export (bool) var is_enabled: bool = true
 
 
 var cost: float = 5.0
@@ -20,7 +21,7 @@ func _ready() -> void:
 
 
 func _process(delta) -> void:
-	if !_is_firing:
+	if !is_enabled or !_is_firing:
 		return
 	_timer += delta
 	if _timer >= fire_rate:
@@ -41,14 +42,14 @@ func _find_closest_enemy() -> Node2D:
 
 
 func _on_Area2D_body_entered(body: Node2D) -> void:
-	if !body.is_in_group("enemy_lead"):
+	if !is_enabled or !body.is_in_group("enemy_lead"):
 		return
 	_enemies.append(body)
 	_is_firing = true
 
 
 func _on_Area2D_body_exited(body: Node2D) -> void:
-	if !body.is_in_group("enemy_lead"):
+	if !is_enabled or !body.is_in_group("enemy_lead"):
 		return
 	_enemies.remove(_enemies.find(body))
 	if _enemies.size() <= 0:
