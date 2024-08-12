@@ -30,7 +30,7 @@ func spawn_enemies(amount: int = 1) -> Array:
 		var enemy: Node = Enemy.instance()
 		enemy.speed = _rng.randf_range(enemy.speed - SPEED_VARIANCE, enemy.speed + SPEED_VARIANCE)
 		enemy.add_to_group("enemy")
-		enemy_path_follow.add_child(enemy)
+		enemy_path_follow.enemy = enemy
 		
 		# create a targeting lead for the enemy and its corresponding PathFollow node
 		var enemy_lead_path_follow: PathFollow2D = EnemyLeadPathFollow.instance()

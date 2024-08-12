@@ -18,11 +18,12 @@ onready var viewport_size: Vector2 = get_viewport().size
 onready var camera: Camera2D = $Node2D/Camera
 onready var path: Path2D = $Node2D/Path2D
 onready var enemy_spawner: Node = $Node2D/EnemySpawner
+onready var enemies: Node = $Node2D/Enemies
 onready var bullets: Node = $Node2D/Bullets
 onready var bullet_spawner: Node = $Node2D/BulletSpawner
 onready var health: Label = $CanvasLayer/UI/HBoxContainer/HealthContainer/HealthValueLabel
 onready var gold: Label = $CanvasLayer/UI/HBoxContainer/GoldContainer/GoldValueLabel
-onready var enemies: Label = $CanvasLayer/UI/HBoxContainer/EnemiesContainer/EnemiesValueLabel
+onready var enemies_label: Label = $CanvasLayer/UI/HBoxContainer/EnemiesContainer/EnemiesValueLabel
 onready var wave: Label = $CanvasLayer/UI/HBoxContainer/WaveContainer/WaveValueLabel
 onready var placeholder: Node2D = $Node2D/BuildPlaceholder
 
@@ -30,7 +31,7 @@ onready var placeholder: Node2D = $Node2D/BuildPlaceholder
 func _ready() -> void:
 	camera.position.y = 480
 	health.text = str(_health)
-	enemies.text = str(_enemies)
+	enemies_label.text = str(_enemies)
 	wave.text = str(_wave)
 	_spawn_wave()
 	var _error = EventBus.connect("tower_fired", self, "_on_EventBus_tower_fired")
@@ -94,11 +95,12 @@ func _spawn_wave() -> void:
 
 func _spawn_enemies() -> void:
 	var spawned_enemies: Array = enemy_spawner.spawn_enemies(15)
-	for enemy in spawned_enemies:
-		path.add_child(enemy)
-		path.add_child(enemy.enemy_lead_path_follow)
+	for enemy_path_follow in spawned_enemies:
+		path.add_child(enemy_path_follow)
+		path.add_child(enemy_path_follow.enemy_lead_path_follow)
+		enemies.add_child(enemy_path_follow.enemy)
 		_enemies += 1
-	enemies.text = str(_enemies)
+	enemies_label.text = str(_enemies)
 
 
 func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, amount: int = 1) -> void:
@@ -119,7 +121,7 @@ func _on_EventBus_base_hit(damage: float) -> void:
 		# TODO: wave cleared
 		print("Wave cleared") 
 	health.text = str(_health)
-	enemies.text = str(_enemies)
+	enemies_label.text = str(_enemies)
 
 
 func _on_EventBus_enemy_killed(add_gold: float) -> void:
@@ -129,6 +131,6 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 		_enemies = 0
 		# TODO: wave cleared
 		print("Wave cleared") 
-	enemies.text = str(_enemies)
+	enemies_label.text = str(_enemies)
 	gold.text = str(_gold)
 
