@@ -1,0 +1,238 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://ui/UI.gd" type="Script" id=1]
+[ext_resource path="res://assets/tower1.png" type="Texture" id=2]
+[ext_resource path="res://assets/tower5.png" type="Texture" id=3]
+[ext_resource path="res://assets/tower4.png" type="Texture" id=4]
+[ext_resource path="res://assets/tower2.png" type="Texture" id=5]
+[ext_resource path="res://assets/tower3.png" type="Texture" id=6]
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource( 1 )
+
+[node name="InfoBar" type="Control" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -320.0
+margin_bottom = 48.0
+
+[node name="Panel" type="Panel" parent="InfoBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InfoBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="WaveContainer" type="HBoxContainer" parent="InfoBar/HBoxContainer"]
+margin_left = 29.0
+margin_right = 84.0
+margin_bottom = 48.0
+
+[node name="WaveLabel" type="Label" parent="InfoBar/HBoxContainer/WaveContainer"]
+margin_top = 17.0
+margin_right = 43.0
+margin_bottom = 31.0
+text = "Wave: "
+
+[node name="WaveValueLabel" type="Label" parent="InfoBar/HBoxContainer/WaveContainer"]
+margin_left = 47.0
+margin_top = 17.0
+margin_right = 55.0
+margin_bottom = 31.0
+text = "1"
+
+[node name="EnemiesContainer" type="HBoxContainer" parent="InfoBar/HBoxContainer"]
+margin_left = 88.0
+margin_right = 163.0
+margin_bottom = 48.0
+
+[node name="EnemiesLabel" type="Label" parent="InfoBar/HBoxContainer/EnemiesContainer"]
+margin_top = 17.0
+margin_right = 63.0
+margin_bottom = 31.0
+text = "Enemies: "
+
+[node name="EnemiesValueLabel" type="Label" parent="InfoBar/HBoxContainer/EnemiesContainer"]
+margin_left = 67.0
+margin_top = 17.0
+margin_right = 75.0
+margin_bottom = 31.0
+text = "0"
+
+[node name="HealthContainer" type="HBoxContainer" parent="InfoBar/HBoxContainer"]
+margin_left = 167.0
+margin_right = 237.0
+margin_bottom = 48.0
+
+[node name="HealthLabel" type="Label" parent="InfoBar/HBoxContainer/HealthContainer"]
+margin_top = 17.0
+margin_right = 50.0
+margin_bottom = 31.0
+text = "Health: "
+
+[node name="HealthValueLabel" type="Label" parent="InfoBar/HBoxContainer/HealthContainer"]
+margin_left = 54.0
+margin_top = 17.0
+margin_right = 70.0
+margin_bottom = 31.0
+text = "10"
+
+[node name="GoldContainer" type="HBoxContainer" parent="InfoBar/HBoxContainer"]
+margin_left = 241.0
+margin_right = 291.0
+margin_bottom = 48.0
+
+[node name="GoldLabel" type="Label" parent="InfoBar/HBoxContainer/GoldContainer"]
+margin_top = 17.0
+margin_right = 38.0
+margin_bottom = 31.0
+text = "Gold: "
+
+[node name="GoldValueLabel" type="Label" parent="InfoBar/HBoxContainer/GoldContainer"]
+margin_left = 42.0
+margin_top = 17.0
+margin_right = 50.0
+margin_bottom = 31.0
+text = "0"
+
+[node name="BuildBar" type="Control" parent="."]
+margin_top = 704.0
+margin_right = 1280.0
+margin_bottom = 768.0
+
+[node name="Panel" type="Panel" parent="BuildBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Fire" type="Button" parent="BuildBar"]
+margin_left = 480.0
+margin_right = 544.0
+margin_bottom = 64.0
+
+[node name="TextureRect" type="TextureRect" parent="BuildBar/Fire"]
+anchor_right = 1.0
+margin_top = 7.0
+margin_bottom = 39.0
+texture = ExtResource( 2 )
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="BuildBar/Fire"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -33.0
+margin_top = -19.0
+margin_right = 48.0
+margin_bottom = -5.0
+rect_scale = Vector2( 0.85, 0.85 )
+text = "Fire"
+align = 1
+
+[node name="Ice" type="Button" parent="BuildBar"]
+margin_left = 544.0
+margin_right = 608.0
+margin_bottom = 64.0
+
+[node name="TextureRect" type="TextureRect" parent="BuildBar/Ice"]
+anchor_right = 1.0
+margin_top = 7.0
+margin_bottom = 39.0
+texture = ExtResource( 5 )
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="BuildBar/Ice"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -33.0
+margin_top = -19.0
+margin_right = 48.0
+margin_bottom = -5.0
+rect_scale = Vector2( 0.85, 0.85 )
+text = "Ice"
+align = 1
+
+[node name="Lightning" type="Button" parent="BuildBar"]
+margin_left = 608.0
+margin_right = 672.0
+margin_bottom = 64.0
+
+[node name="TextureRect" type="TextureRect" parent="BuildBar/Lightning"]
+anchor_right = 1.0
+margin_top = 7.0
+margin_bottom = 39.0
+texture = ExtResource( 6 )
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="BuildBar/Lightning"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -33.0
+margin_top = -19.0
+margin_right = 48.0
+margin_bottom = -5.0
+rect_scale = Vector2( 0.85, 0.85 )
+text = "Lightning"
+align = 1
+
+[node name="Earth" type="Button" parent="BuildBar"]
+margin_left = 672.0
+margin_right = 736.0
+margin_bottom = 64.0
+
+[node name="TextureRect" type="TextureRect" parent="BuildBar/Earth"]
+anchor_right = 1.0
+margin_top = 7.0
+margin_bottom = 39.0
+texture = ExtResource( 4 )
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="BuildBar/Earth"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -33.0
+margin_top = -19.0
+margin_right = 48.0
+margin_bottom = -5.0
+rect_scale = Vector2( 0.85, 0.85 )
+text = "Earth"
+align = 1
+
+[node name="Curse" type="Button" parent="BuildBar"]
+margin_left = 736.0
+margin_right = 800.0
+margin_bottom = 64.0
+
+[node name="TextureRect" type="TextureRect" parent="BuildBar/Curse"]
+anchor_right = 1.0
+margin_top = 7.0
+margin_bottom = 39.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="BuildBar/Curse"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -33.0
+margin_top = -19.0
+margin_right = 48.0
+margin_bottom = -5.0
+rect_scale = Vector2( 0.85, 0.85 )
+text = "Curse"
+align = 1
+
+[connection signal="pressed" from="BuildBar/Fire" to="." method="_on_Fire_pressed"]
+[connection signal="pressed" from="BuildBar/Ice" to="." method="_on_Ice_pressed"]
+[connection signal="pressed" from="BuildBar/Lightning" to="." method="_on_Lightning_pressed"]
+[connection signal="pressed" from="BuildBar/Earth" to="." method="_on_Earth_pressed"]
+[connection signal="pressed" from="BuildBar/Curse" to="." method="_on_Curse_pressed"]

@@ -18,46 +18,43 @@ onready var viewport_size: Vector2 = get_viewport().size
 onready var camera: Camera2D = $Node2D/Camera
 onready var path: Path2D = $Node2D/Path2D
 onready var enemy_spawner: Node = $Node2D/EnemySpawner
+onready var towers: Node = $Node2D/Towers
 onready var enemies: Node = $Node2D/Enemies
 onready var bullets: Node = $Node2D/Bullets
 onready var bullet_spawner: Node = $Node2D/BulletSpawner
-onready var health: Label = $CanvasLayer/UI/HBoxContainer/HealthContainer/HealthValueLabel
-onready var gold: Label = $CanvasLayer/UI/HBoxContainer/GoldContainer/GoldValueLabel
-onready var enemies_label: Label = $CanvasLayer/UI/HBoxContainer/EnemiesContainer/EnemiesValueLabel
-onready var wave: Label = $CanvasLayer/UI/HBoxContainer/WaveContainer/WaveValueLabel
 onready var placeholder: Node2D = $Node2D/BuildPlaceholder
+onready var ui: CanvasLayer = $UI
 
 
 func _ready() -> void:
 	camera.position.y = 480
-	health.text = str(_health)
-	enemies_label.text = str(_enemies)
-	wave.text = str(_wave)
+	ui.set_health(_health)
+	ui.set_gold(_gold)
+	ui.set_enemies(_enemies)
+	ui.set_wave(_wave)
 	_spawn_wave()
 	var _error = EventBus.connect("tower_fired", self, "_on_EventBus_tower_fired")
 	_error = EventBus.connect("base_hit", self, "_on_EventBus_base_hit")
 	_error = EventBus.connect("enemy_killed", self, "_on_EventBus_enemy_killed")
+	_error = EventBus.connect("build_mode", self, "_on_EventBus_build_mode")
 
 
 func _input(event) -> void:
+	if !_is_build_mode:
+		return
+	
 	# toggle building mode
-	if event.is_action_pressed("ui_select"):
-		if _is_build_mode:
-			_is_build_mode = false
-			placeholder.visible = false
-			return
-		_is_build_mode = true
-		placeholder.visible = true
+	if event.is_action_pressed("ui_cancel"):
+		_is_build_mode = false
+		placeholder.visible = false
 	
 	# build tower
-	elif event.is_action_pressed("ui_accept"):
-		if !_is_build_mode or placeholder.cost > _gold:
-			return
+	elif event.is_action_pressed("ui_select") and placeholder.cost <= _gold:
 		_gold -= placeholder.cost
-		gold.text = str(_gold)
+		ui.set_gold(_gold)
 		var tower = Tower.instance()
 		tower.position = placeholder.position
-		$Node2D/Towers.add_child(tower)
+		towers.add_child(tower)
 
 
 func _process(delta: float) -> void:
@@ -90,7 +87,7 @@ func _spawn_wave() -> void:
 	# TODO
 	_wave += 1
 	_spawn_enemies()
-	wave.text = str(_wave)
+	ui.set_wave(_wave)
 
 
 func _spawn_enemies() -> void:
@@ -100,7 +97,7 @@ func _spawn_enemies() -> void:
 		path.add_child(enemy_path_follow.enemy_lead_path_follow)
 		enemies.add_child(enemy_path_follow.enemy)
 		_enemies += 1
-	enemies_label.text = str(_enemies)
+	ui.set_enemies(_enemies)
 
 
 func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, amount: int = 1) -> void:
@@ -119,9 +116,9 @@ func _on_EventBus_base_hit(damage: float) -> void:
 	elif _enemies <= 0:
 		_enemies = 0
 		# TODO: wave cleared
-		print("Wave cleared") 
-	health.text = str(_health)
-	enemies_label.text = str(_enemies)
+		print("Wave cleared")
+	ui.set_health(_health)
+	ui.set_enemies(_enemies)
 
 
 func _on_EventBus_enemy_killed(add_gold: float) -> void:
@@ -131,6 +128,12 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 		_enemies = 0
 		# TODO: wave cleared
 		print("Wave cleared") 
-	enemies_label.text = str(_enemies)
-	gold.text = str(_gold)
+	ui.set_gold(_gold)
+	ui.set_enemies(_enemies)
+
+
+func _on_EventBus_build_mode(_tower: int) -> void:
+	_is_build_mode = true
+	placeholder.visible = true
+	# TODO: handle different towers
 
