@@ -1,10 +1,17 @@
 extends Node
 
 
+const Tower: PackedScene = preload("res://objects/Tower.tscn")
+
+
+const GRID_SIZE: int = 16
+
+
 var _health: float = 10.0
 var _gold: float = 0.0
 var _enemies: int = 0
 var _wave: int = 0
+var _is_build_mode: bool = false
 
 
 onready var viewport_size: Vector2 = get_viewport().size
@@ -17,6 +24,7 @@ onready var health: Label = $CanvasLayer/UI/HBoxContainer/HealthContainer/Health
 onready var gold: Label = $CanvasLayer/UI/HBoxContainer/GoldContainer/GoldValueLabel
 onready var enemies: Label = $CanvasLayer/UI/HBoxContainer/EnemiesContainer/EnemiesValueLabel
 onready var wave: Label = $CanvasLayer/UI/HBoxContainer/WaveContainer/WaveValueLabel
+onready var placeholder: Node2D = $Node2D/BuildPlaceholder
 
 
 func _ready() -> void:
@@ -28,6 +36,27 @@ func _ready() -> void:
 	var _error = EventBus.connect("tower_fired", self, "_on_EventBus_tower_fired")
 	_error = EventBus.connect("base_hit", self, "_on_EventBus_base_hit")
 	_error = EventBus.connect("enemy_killed", self, "_on_EventBus_enemy_killed")
+
+
+func _input(event) -> void:
+	# toggle building mode
+	if event.is_action_pressed("ui_select"):
+		if _is_build_mode:
+			_is_build_mode = false
+			placeholder.visible = false
+			return
+		_is_build_mode = true
+		placeholder.visible = true
+	
+	# build tower
+	elif event.is_action_pressed("ui_accept"):
+		if !_is_build_mode or placeholder.cost > _gold:
+			return
+		_gold -= placeholder.cost
+		gold.text = str(_gold)
+		var tower = Tower.instance()
+		tower.position = placeholder.position
+		$Node2D/Towers.add_child(tower)
 
 
 func _process(delta: float) -> void:
@@ -47,6 +76,13 @@ func _process(delta: float) -> void:
 			zoom_dampen = false
 	if zoom_direction != 0:
 		camera.zoom_inout(zoom_direction * delta, zoom_dampen)
+	
+	# handle building placeholder movement
+	if _is_build_mode:
+		var mouse_position: Vector2 = get_viewport().get_mouse_position()
+		var cell_x: int = int(floor(mouse_position.x / GRID_SIZE))
+		var cell_y: int = int(floor(mouse_position.y / GRID_SIZE))
+		placeholder.position = Vector2(cell_x * GRID_SIZE, cell_y * GRID_SIZE)
 
 
 func _spawn_wave() -> void:

@@ -5,6 +5,9 @@ export (bool) var show_radius: bool = false
 export (float) var fire_rate: float = 0.5
 
 
+var cost: float = 5.0
+
+
 var _enemies: Array = []
 var _is_firing: bool = false
 var _timer: float = fire_rate
