@@ -38,6 +38,7 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	_handle_input_common(event)
 	_handle_input_build_mode(event)
+	_handle_input_ability(event)
 
 
 func _process(delta: float) -> void:
@@ -57,6 +58,13 @@ func _ready_events() -> void:
 	_error = EventBus.connect("base_hit", self, "_on_EventBus_base_hit")
 	_error = EventBus.connect("enemy_killed", self, "_on_EventBus_enemy_killed")
 	_error = EventBus.connect("build_mode", self, "_on_EventBus_build_mode")
+
+
+func _handle_input_common(event: InputEvent) -> void:
+	if _is_build_mode:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		get_tree().quit()
 
 
 func _handle_input_build_mode(event: InputEvent) -> void:
@@ -82,11 +90,15 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 		towers.add_child(tower)
 
 
-func _handle_input_common(event: InputEvent) -> void:
+func _handle_input_ability(event: InputEvent) -> void:
 	if _is_build_mode:
 		return
-	if event.is_action_pressed("ui_cancel"):
-		get_tree().quit()
+	
+	# activate ability
+	if event.is_action_pressed("ui_select"):
+		var mouse_position: Vector2 = _get_mouse_position()
+		_spawn_bullets(mouse_position, mouse_position, 1)
+		
 
 
 func _process_camera(delta: float) -> void:
@@ -112,7 +124,7 @@ func _process_building(_delta: float) -> void:
 	if !_is_build_mode:
 		return
 	# handle building placeholder movement
-	var mouse_position: Vector2 = get_viewport().get_mouse_position() - get_viewport().canvas_transform.origin
+	var mouse_position: Vector2 = _get_mouse_position()
 	var cell_x: int = int(floor(mouse_position.x / GRID_SIZE))
 	var cell_y: int = int(floor(mouse_position.y / GRID_SIZE))
 	placeholder.position = Vector2(cell_x * GRID_SIZE, cell_y * GRID_SIZE)
@@ -145,10 +157,18 @@ func _is_tile_restricted(x: int, y: int) -> bool:
 	return false
 
 
-func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, amount: int = 1) -> void:
+func _spawn_bullets(position: Vector2, destination: Vector2, amount: int = 1) -> void:
 	var spawned_bullets: Array = bullet_spawner.spawn_bullets(position, destination, amount)
 	for bullet in spawned_bullets:
 		bullets.add_child(bullet)
+
+
+func _get_mouse_position() -> Vector2:
+	return get_viewport().get_mouse_position() - get_viewport().canvas_transform.origin
+
+
+func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, amount: int = 1) -> void:
+	_spawn_bullets(position, destination, amount)
 
 
 func _on_EventBus_base_hit(damage: float) -> void:

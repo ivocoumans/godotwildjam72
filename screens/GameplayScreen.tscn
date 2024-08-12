@@ -40,6 +40,7 @@ tile_data = PoolIntArray( 131082, 1, 0, 131083, 1, 0, 131084, 1, 0, 131085, 1, 0
 
 [node name="Tower" parent="Node2D/Towers" instance=ExtResource( 1 )]
 position = Vector2( 960, 288 )
+is_enabled = false
 
 [node name="Enemies" type="YSort" parent="Node2D"]
 

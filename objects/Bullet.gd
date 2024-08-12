@@ -37,6 +37,9 @@ func _explode() -> void:
 	if _is_spent:
 		return
 	_is_spent = true
+	
+	yield(get_tree(), "physics_frame")
+
 	var bodies: Array = $DamageArea.get_overlapping_bodies()
 	for body in bodies:
 		if !body.is_in_group("enemy"):
