@@ -1,7 +1,10 @@
 extends Node
 
 
-const Tower: PackedScene = preload("res://objects/Tower.tscn")
+const ExplosiveTower: PackedScene = preload("res://objects/towers/ExplosiveTower.tscn")
+const FreezeTower: PackedScene = preload("res://objects/towers/FreezeTower.tscn")
+const SnareTower: PackedScene = preload("res://objects/towers/SnareTower.tscn")
+const PoisonTower: PackedScene = preload("res://objects/towers/PoisonTower.tscn")
 
 
 const GRID_SIZE: int = 32
@@ -13,6 +16,7 @@ var _gold: float = 0.0
 var _enemies: int = 0
 var _wave: int = 0
 var _is_build_mode: bool = false
+var _active_tower: int = -1
 var _active_ability: int = -1
 
 
@@ -87,7 +91,7 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 			return
 		_gold -= placeholder.cost
 		ui.set_gold(_gold)
-		var tower = Tower.instance()
+		var tower = ExplosiveTower.instance()
 		tower.position = placeholder.position
 		towers.add_child(tower)
 

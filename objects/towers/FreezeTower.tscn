@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://objects/towers/TowerBase.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/tower2.png" type="Texture" id=2]
+[ext_resource path="res://objects/towers/FreezeTower.gd" type="Script" id=3]
+
+[node name="FreezeTower" type="Node2D"]
+script = ExtResource( 3 )
+fire_rate = 0.3
+bullet_type = 1
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 16, 16 )
+texture = ExtResource( 2 )
+
+[node name="TowerBase" parent="." instance=ExtResource( 1 )]

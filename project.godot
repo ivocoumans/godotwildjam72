@@ -23,11 +23,17 @@ _global_script_classes=[ {
 "class": "DamageOverTimeEffect",
 "language": "GDScript",
 "path": "res://actors/damage_over_time_effect.gd"
+}, {
+"base": "Node2D",
+"class": "TowerBase",
+"language": "GDScript",
+"path": "res://objects/towers/TowerBase.gd"
 } ]
 _global_script_class_icons={
 "BulletBase": "",
 "Common": "",
-"DamageOverTimeEffect": ""
+"DamageOverTimeEffect": "",
+"TowerBase": ""
 }
 
 [application]

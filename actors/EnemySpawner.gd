@@ -26,7 +26,7 @@ func spawn_enemies(amount: int = 1) -> Array:
 		var enemy_path_follow: PathFollow2D = EnemyPathFollow.instance()
 		enemy_path_follow.h_offset = _rng.randf_range(0, H_VARIANCE)
 		enemy_path_follow.v_offset = _rng.randf_range(0, V_VARIANCE)
-		enemy_path_follow.offset = 500
+		enemy_path_follow.offset = 1100
 		var enemy: Node = Enemy.instance()
 		enemy.speed = _rng.randf_range(enemy.speed - SPEED_VARIANCE, enemy.speed + SPEED_VARIANCE)
 		enemy.add_to_group("enemy")

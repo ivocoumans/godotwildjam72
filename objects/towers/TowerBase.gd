@@ -1,13 +1,12 @@
 extends Node2D
+class_name TowerBase
 
 
+export (bool) var is_enabled: bool = true
 export (bool) var show_radius: bool = false
 export (float) var fire_rate: float = 0.5
 export (int) var bullet_type: int = 0
-export (bool) var is_enabled: bool = true
-
-
-var cost: float = 5.0
+export (float) var cost: float = 5.0
 
 
 var _enemies: Array = []
@@ -16,7 +15,10 @@ var _timer: float = fire_rate
 
 
 func _ready() -> void:
-	$SpriteRadius.visible = show_radius
+	$TowerBase/SpriteRadius.visible = show_radius
+	# TODO: can I do this in the editor?
+	var _error = $TowerBase/Area2D.connect("body_entered", self, "_on_Area2D_body_entered")
+	_error = $TowerBase/Area2D.connect("body_exited", self, "_on_Area2D_body_exited")
 
 
 func _process(delta) -> void:
