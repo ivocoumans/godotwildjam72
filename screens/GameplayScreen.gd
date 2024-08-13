@@ -5,6 +5,7 @@ const Tower: PackedScene = preload("res://objects/Tower.tscn")
 
 
 const GRID_SIZE: int = 32
+const SCREEN_EDGE: int = 700
 
 
 var _health: float = 10.0
@@ -12,6 +13,7 @@ var _gold: float = 0.0
 var _enemies: int = 0
 var _wave: int = 0
 var _is_build_mode: bool = false
+var _active_ability: int = -1
 
 
 onready var viewport_size: Vector2 = get_viewport().size
@@ -58,6 +60,7 @@ func _ready_events() -> void:
 	_error = EventBus.connect("base_hit", self, "_on_EventBus_base_hit")
 	_error = EventBus.connect("enemy_killed", self, "_on_EventBus_enemy_killed")
 	_error = EventBus.connect("build_mode", self, "_on_EventBus_build_mode")
+	_error = EventBus.connect("active_ability", self, "_on_EventBus_active_ability")
 
 
 func _handle_input_common(event: InputEvent) -> void:
@@ -81,7 +84,6 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 		var x: int = int(placeholder.position.x / GRID_SIZE)
 		var y: int = int(placeholder.position.y / GRID_SIZE)
 		if _is_tile_restricted(x, y):
-			print("restricted")
 			return
 		_gold -= placeholder.cost
 		ui.set_gold(_gold)
@@ -91,13 +93,14 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 
 
 func _handle_input_ability(event: InputEvent) -> void:
-	if _is_build_mode:
+	if _is_build_mode or _active_ability < 0:
 		return
 	
 	# activate ability
 	if event.is_action_pressed("ui_select"):
 		var mouse_position: Vector2 = _get_mouse_position()
-		_spawn_bullets(mouse_position, mouse_position, 1)
+		if mouse_position.y <= SCREEN_EDGE:
+			_spawn_bullets(mouse_position - Vector2(50, 50), mouse_position, _active_ability, 1)
 		
 
 
@@ -127,7 +130,11 @@ func _process_building(_delta: float) -> void:
 	var mouse_position: Vector2 = _get_mouse_position()
 	var cell_x: int = int(floor(mouse_position.x / GRID_SIZE))
 	var cell_y: int = int(floor(mouse_position.y / GRID_SIZE))
-	placeholder.position = Vector2(cell_x * GRID_SIZE, cell_y * GRID_SIZE)
+	if mouse_position.y < SCREEN_EDGE:
+		placeholder.position.y = cell_y * GRID_SIZE
+		if placeholder.visible == false:
+			placeholder.visible = true
+	placeholder.position.x = cell_x * GRID_SIZE
 
 
 func _spawn_wave() -> void:
@@ -138,7 +145,7 @@ func _spawn_wave() -> void:
 
 
 func _spawn_enemies() -> void:
-	var spawned_enemies: Array = enemy_spawner.spawn_enemies(15)
+	var spawned_enemies: Array = enemy_spawner.spawn_enemies(1)
 	for enemy_path_follow in spawned_enemies:
 		path.add_child(enemy_path_follow)
 		path.add_child(enemy_path_follow.enemy_lead_path_follow)
@@ -157,18 +164,19 @@ func _is_tile_restricted(x: int, y: int) -> bool:
 	return false
 
 
-func _spawn_bullets(position: Vector2, destination: Vector2, amount: int = 1) -> void:
-	var spawned_bullets: Array = bullet_spawner.spawn_bullets(position, destination, amount)
+func _spawn_bullets(position: Vector2, destination: Vector2, type: int, amount: int = 1) -> void:
+	var spawned_bullets: Array = bullet_spawner.spawn_bullets(position, destination, type, amount)
 	for bullet in spawned_bullets:
 		bullets.add_child(bullet)
 
 
 func _get_mouse_position() -> Vector2:
-	return get_viewport().get_mouse_position() - get_viewport().canvas_transform.origin
+	var viewport = get_viewport()
+	return (viewport.get_mouse_position() - viewport.canvas_transform.origin) * camera.zoom
 
 
-func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, amount: int = 1) -> void:
-	_spawn_bullets(position, destination, amount)
+func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, type: int, amount: int = 1) -> void:
+	_spawn_bullets(position, destination, type, amount)
 
 
 func _on_EventBus_base_hit(damage: float) -> void:
@@ -199,6 +207,11 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 
 func _on_EventBus_build_mode(_tower: int) -> void:
 	_is_build_mode = true
-	placeholder.visible = true
 	# TODO: handle different towers
+
+
+func _on_EventBus_active_ability(ability: int) -> void:
+	_active_ability = ability
+	_is_build_mode = false
+	placeholder.visible = false
 

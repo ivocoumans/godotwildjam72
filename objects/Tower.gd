@@ -3,6 +3,7 @@ extends Node2D
 
 export (bool) var show_radius: bool = false
 export (float) var fire_rate: float = 0.5
+export (int) var bullet_type: int = 0
 export (bool) var is_enabled: bool = true
 
 
@@ -15,8 +16,6 @@ var _timer: float = fire_rate
 
 
 func _ready() -> void:
-	if OS.is_debug_build():
-		show_radius = true
 	$SpriteRadius.visible = show_radius
 
 
@@ -27,7 +26,7 @@ func _process(delta) -> void:
 	if _timer >= fire_rate:
 		_timer = 0
 		var enemy = _find_closest_enemy()
-		EventBus.emit_tower_fired(position + $Sprite.position, enemy.global_position)
+		EventBus.emit_tower_fired(position + $Sprite.position, enemy.global_position, bullet_type)
 
 
 func _find_closest_enemy() -> Node2D:

@@ -9,13 +9,25 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node2D",
+"class": "BulletBase",
+"language": "GDScript",
+"path": "res://objects/bullets/BulletBase.gd"
+}, {
 "base": "Reference",
 "class": "Common",
 "language": "GDScript",
 "path": "res://common/common.gd"
+}, {
+"base": "Reference",
+"class": "DamageOverTimeEffect",
+"language": "GDScript",
+"path": "res://actors/damage_over_time_effect.gd"
 } ]
 _global_script_class_icons={
-"Common": ""
+"BulletBase": "",
+"Common": "",
+"DamageOverTimeEffect": ""
 }
 
 [application]

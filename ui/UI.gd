@@ -23,22 +23,34 @@ func set_wave(new_wave: float) -> void:
 	wave.text = str(new_wave)
 
 
-func _on_Fire_pressed():
+func _on_BuildFireButton_pressed():
 	EventBus.emit_build_mode(0)
 
 
-func _on_Ice_pressed():
+func _on_BuildIceButton_pressed():
 	EventBus.emit_build_mode(1)
 
 
-func _on_Lightning_pressed():
+func _on_BuildSnareButton_pressed():
 	EventBus.emit_build_mode(2)
 
 
-func _on_Earth_pressed():
+func _on_BuildPoisonButton_pressed():
 	EventBus.emit_build_mode(3)
 
 
-func _on_Curse_pressed():
-	EventBus.emit_build_mode(4)
+func _on_FireAbilityButton_pressed():
+	EventBus.emit_active_ability(0)
+
+
+func _on_IceAbilityButton_pressed():
+	EventBus.emit_active_ability(1)
+
+
+func _on_SnareAbilityButton_pressed():
+	EventBus.emit_active_ability(2)
+
+
+func _on_PoisonAbilityButton_pressed():
+	EventBus.emit_active_ability(3)
 
