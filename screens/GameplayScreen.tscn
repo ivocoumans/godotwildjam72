@@ -48,17 +48,14 @@ show_radius = true
 [node name="FreezeTower" parent="Node2D/Towers" instance=ExtResource( 9 )]
 position = Vector2( 416, 512 )
 show_radius = true
-fire_rate = 1.0
 
 [node name="SnareTower" parent="Node2D/Towers" instance=ExtResource( 10 )]
-position = Vector2( 704, 512 )
+position = Vector2( 672, 512 )
 show_radius = true
-fire_rate = 3.0
 
 [node name="PoisonTower" parent="Node2D/Towers" instance=ExtResource( 8 )]
-position = Vector2( 560, 512 )
+position = Vector2( 544, 512 )
 show_radius = true
-fire_rate = 2.5
 
 [node name="Enemies" type="YSort" parent="Node2D"]
 

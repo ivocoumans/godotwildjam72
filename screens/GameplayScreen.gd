@@ -18,6 +18,7 @@ var _wave: int = 0
 var _is_build_mode: bool = false
 var _active_tower: int = -1
 var _active_ability: int = -1
+var _wave_timer: float = 0
 
 
 onready var viewport_size: Vector2 = get_viewport().size
@@ -50,6 +51,10 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	_process_camera(delta)
 	_process_building(delta)
+	_wave_timer += delta
+	if _wave_timer > 10:
+		_wave_timer = 0
+		_spawn_wave()
 
 
 func _ready_ui() -> void:
@@ -84,14 +89,18 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 		placeholder.visible = false
 	
 	# build tower
-	elif event.is_action_pressed("ui_select") and placeholder.cost <= _gold:
+	elif event.is_action_pressed("ui_select") and placeholder.visible and placeholder.cost <= _gold:
+		var mouse_position: Vector2 = _get_mouse_position()
+		if mouse_position.y > SCREEN_EDGE:
+			return
+		
 		var x: int = int(placeholder.position.x / GRID_SIZE)
 		var y: int = int(placeholder.position.y / GRID_SIZE)
 		if _is_tile_restricted(x, y):
 			return
 		_gold -= placeholder.cost
 		ui.set_gold(_gold)
-		var tower = ExplosiveTower.instance()
+		var tower = _get_tower_instance(_active_tower)
 		tower.position = placeholder.position
 		towers.add_child(tower)
 
@@ -138,6 +147,8 @@ func _process_building(_delta: float) -> void:
 		placeholder.position.y = cell_y * GRID_SIZE
 		if placeholder.visible == false:
 			placeholder.visible = true
+	else:
+		placeholder.visible = false
 	placeholder.position.x = cell_x * GRID_SIZE
 
 
@@ -182,6 +193,17 @@ func _get_mouse_position() -> Vector2:
 	return (viewport.get_mouse_position() - viewport.canvas_transform.origin) * camera.zoom
 
 
+func _get_tower_instance(tower: int = 0) -> Node:
+	var Tower: PackedScene = ExplosiveTower
+	if tower == 1:
+		Tower = FreezeTower
+	elif tower == 2:
+		Tower = SnareTower
+	elif tower == 3:
+		Tower = PoisonTower
+	return Tower.instance()
+
+
 func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, type: int, amount: int = 1) -> void:
 	_spawn_bullets(position, destination, type, amount)
 
@@ -212,9 +234,21 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 	ui.set_enemies(_enemies)
 
 
-func _on_EventBus_build_mode(_tower: int) -> void:
+func _on_EventBus_build_mode(tower: int) -> void:
 	_is_build_mode = true
-	# TODO: handle different towers
+	_active_tower = tower
+	
+	# remove old placeholder towers
+	var children = placeholder.get_children()
+	for child in children:
+		placeholder.remove_child(child)
+		child.queue_free()
+	
+	# add a new placeholder tower
+	var placeholder_tower = _get_tower_instance(tower)
+	placeholder_tower.is_enabled = false
+	placeholder_tower.show_radius = true
+	placeholder.add_child(placeholder_tower)
 
 
 func _on_EventBus_active_ability(ability: int) -> void:

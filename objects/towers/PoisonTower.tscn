@@ -6,8 +6,9 @@
 
 [node name="PoisonTower" type="Node2D"]
 script = ExtResource( 3 )
-fire_rate = 0.4
+fire_rate = 2.5
 bullet_type = 3
+cost = 15.0
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 16, 16 )
