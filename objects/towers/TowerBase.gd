@@ -46,7 +46,9 @@ func _on_Area2D_body_entered(body: Node2D) -> void:
 	if !is_enabled or !body.is_in_group("enemy_lead"):
 		return
 	_enemies.append(body)
-	_is_firing = true
+	if !_is_firing:
+		_timer = fire_rate
+		_is_firing = true
 
 
 func _on_Area2D_body_exited(body: Node2D) -> void:

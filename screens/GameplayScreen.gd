@@ -144,12 +144,15 @@ func _process_building(_delta: float) -> void:
 func _spawn_wave() -> void:
 	# TODO
 	_wave += 1
-	_spawn_enemies()
+	_spawn_enemies(0, 15, 250)
+	_spawn_enemies(1, 5, 0)
+	_spawn_enemies(2, 3, -50)
+	_spawn_enemies(3, 1, -250)
 	ui.set_wave(_wave)
 
 
-func _spawn_enemies() -> void:
-	var spawned_enemies: Array = enemy_spawner.spawn_enemies(1)
+func _spawn_enemies(type: int = 0, amount: int = 1, offset: float = 0) -> void:
+	var spawned_enemies: Array = enemy_spawner.spawn_enemies(type, amount, offset)
 	for enemy_path_follow in spawned_enemies:
 		path.add_child(enemy_path_follow)
 		path.add_child(enemy_path_follow.enemy_lead_path_follow)

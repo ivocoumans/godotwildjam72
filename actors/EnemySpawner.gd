@@ -3,8 +3,11 @@ extends Node
 
 const EnemyPathFollow: Resource = preload("res://actors/EnemyPathFollow.tscn")
 const EnemyLeadPathFollow: Resource = preload("res://actors/EnemyLeadPathFollow.tscn")
-const Enemy: Resource = preload("res://actors/Enemy.tscn")
 const EnemyLead: Resource = preload("res://actors/EnemyLead.tscn")
+const RegularEnemy: Resource = preload("res://actors/enemies/RegularEnemy.tscn")
+const StrongEnemy: Resource = preload("res://actors/enemies/StrongEnemy.tscn")
+const FastEnemy: Resource = preload("res://actors/enemies/FastEnemy.tscn")
+const BossEnemy: Resource = preload("res://actors/enemies/BossEnemy.tscn")
 
 
 const SPEED_VARIANCE: float = 7.5
@@ -19,14 +22,22 @@ func _ready() -> void:
 	_rng.randomize()
 
 
-func spawn_enemies(amount: int = 1) -> Array:
+func spawn_enemies(type: int = 0, amount: int = 1, offset: float = 0.0) -> Array:
+	var Enemy: PackedScene = RegularEnemy
+	if type == 1:
+		Enemy = StrongEnemy
+	elif type == 2:
+		Enemy = FastEnemy
+	elif type == 3:
+		Enemy = BossEnemy
+	
 	var enemies: Array = []
 	for i in amount:
 		# create an enemy and its corresponding PathFollow node
 		var enemy_path_follow: PathFollow2D = EnemyPathFollow.instance()
 		enemy_path_follow.h_offset = _rng.randf_range(0, H_VARIANCE)
 		enemy_path_follow.v_offset = _rng.randf_range(0, V_VARIANCE)
-		enemy_path_follow.offset = 1100
+		enemy_path_follow.offset = offset
 		var enemy: Node = Enemy.instance()
 		enemy.speed = _rng.randf_range(enemy.speed - SPEED_VARIANCE, enemy.speed + SPEED_VARIANCE)
 		enemy.add_to_group("enemy")
