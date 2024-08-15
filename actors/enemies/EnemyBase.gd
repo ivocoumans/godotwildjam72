@@ -2,7 +2,7 @@ extends KinematicBody2D
 class_name EnemyBase
 
 
-const COLOR_NORMAL = Color8(90, 180, 100)
+const COLOR_NORMAL = Color8(255, 255, 255)
 const COLOR_FIRE = Color8(172, 50, 50)
 const COLOR_FREEZE = Color8(91, 110, 225)
 const COLOR_SNARE = Color8(252, 242, 54)

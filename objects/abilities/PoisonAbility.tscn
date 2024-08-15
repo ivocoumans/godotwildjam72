@@ -9,6 +9,4 @@ script = ExtResource( 2 )
 cost = 20.0
 bullet = ExtResource( 3 )
 
-[node name="Sprite" type="Sprite" parent="."]
-
 [node name="AbilityBase" parent="." instance=ExtResource( 1 )]

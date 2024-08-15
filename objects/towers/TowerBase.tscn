@@ -8,6 +8,7 @@ radius = 125.0
 [node name="TowerBase" type="Node2D"]
 
 [node name="SpriteRadius" type="Sprite" parent="."]
+visible = false
 modulate = Color( 1, 1, 1, 0.254902 )
 position = Vector2( 16, 16 )
 scale = Vector2( 0.96, 0.96 )
@@ -16,5 +17,6 @@ texture = ExtResource( 2 )
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
 position = Vector2( 16, 16 )
 shape = SubResource( 1 )

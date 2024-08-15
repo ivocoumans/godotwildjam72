@@ -1,15 +1,15 @@
 [gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://ui/UI.gd" type="Script" id=1]
-[ext_resource path="res://assets/tower1.png" type="Texture" id=2]
-[ext_resource path="res://assets/tower5.png" type="Texture" id=3]
-[ext_resource path="res://assets/ability1.png" type="Texture" id=4]
-[ext_resource path="res://assets/tower2.png" type="Texture" id=5]
-[ext_resource path="res://assets/tower3.png" type="Texture" id=6]
+[ext_resource path="res://assets/tower_ice.png" type="Texture" id=2]
+[ext_resource path="res://assets/bullet_explosive.png" type="Texture" id=3]
+[ext_resource path="res://assets/tower_snare.png" type="Texture" id=4]
+[ext_resource path="res://assets/tower_poison.png" type="Texture" id=5]
+[ext_resource path="res://assets/bullet_ice.png" type="Texture" id=6]
 [ext_resource path="res://ui/BuildButton.tscn" type="PackedScene" id=7]
-[ext_resource path="res://assets/ability2.png" type="Texture" id=8]
-[ext_resource path="res://assets/ability3.png" type="Texture" id=9]
-[ext_resource path="res://assets/ability5.png" type="Texture" id=10]
+[ext_resource path="res://assets/bullet_snare.png" type="Texture" id=8]
+[ext_resource path="res://assets/bullet_poison.png" type="Texture" id=9]
+[ext_resource path="res://assets/tower_fire.png" type="Texture" id=10]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -116,25 +116,25 @@ margin_left = 320.0
 margin_right = 320.0
 
 [node name="BuildFireButton" parent="Control/BuildBar" instance=ExtResource( 7 )]
-texture = ExtResource( 2 )
+texture = ExtResource( 10 )
 label_text = "Fire"
 
 [node name="BuildIceButton" parent="Control/BuildBar" instance=ExtResource( 7 )]
 margin_left = 64.0
 margin_right = 128.0
-texture = ExtResource( 5 )
+texture = ExtResource( 2 )
 label_text = "Ice"
 
 [node name="BuildSnareButton" parent="Control/BuildBar" instance=ExtResource( 7 )]
 margin_left = 128.0
 margin_right = 192.0
-texture = ExtResource( 6 )
+texture = ExtResource( 4 )
 label_text = "Snare"
 
 [node name="BuildPoisonButton" parent="Control/BuildBar" instance=ExtResource( 7 )]
 margin_left = 192.0
 margin_right = 256.0
-texture = ExtResource( 3 )
+texture = ExtResource( 5 )
 label_text = "Poison"
 
 [node name="AbilityBar" type="Control" parent="Control"]
@@ -148,25 +148,25 @@ margin_right = -576.0
 margin_bottom = -64.0
 
 [node name="FireAbilityButton" parent="Control/AbilityBar" instance=ExtResource( 7 )]
-texture = ExtResource( 4 )
+texture = ExtResource( 3 )
 label_text = "Fire"
 
 [node name="IceAbilityButton" parent="Control/AbilityBar" instance=ExtResource( 7 )]
 margin_left = 64.0
 margin_right = 128.0
-texture = ExtResource( 8 )
+texture = ExtResource( 6 )
 label_text = "Ice"
 
 [node name="SnareAbilityButton" parent="Control/AbilityBar" instance=ExtResource( 7 )]
 margin_left = 128.0
 margin_right = 192.0
-texture = ExtResource( 9 )
+texture = ExtResource( 8 )
 label_text = "Snare"
 
 [node name="PoisonAbilityButton" parent="Control/AbilityBar" instance=ExtResource( 7 )]
 margin_left = 192.0
 margin_right = 256.0
-texture = ExtResource( 10 )
+texture = ExtResource( 9 )
 label_text = "Poison"
 
 [connection signal="pressed" from="Control/BuildBar/BuildFireButton" to="." method="_on_BuildFireButton_pressed"]

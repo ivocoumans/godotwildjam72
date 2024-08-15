@@ -2,6 +2,9 @@ extends Node2D
 class_name TowerBase
 
 
+const RADIUS_ALPHA = 75
+
+
 export (bool) var is_enabled: bool = true
 export (bool) var show_radius: bool = false
 export (float) var fire_rate: float = 0.5
