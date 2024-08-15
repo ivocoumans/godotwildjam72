@@ -9,6 +9,10 @@ extents = Vector2( 12, 12 )
 
 [node name="StrongEnemy" type="KinematicBody2D"]
 script = ExtResource( 3 )
+health = 17.0
+damage = 2.0
+gold = 2.0
+speed = 80.0
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 12, 12 )

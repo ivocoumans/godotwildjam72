@@ -1,15 +1,15 @@
 extends Node
 
 
-signal tower_fired(position, destination, type, amount)
+signal fire_bullet(bullet, origin, target, amount)
 signal base_hit(damage)
 signal enemy_killed(gold)
 signal build_mode(tower)
 signal active_ability(ability)
 
 
-func emit_tower_fired(position: Vector2, destination: Vector2, type: int, amount: int = 1) -> void:
-	emit_signal("tower_fired", position, destination, type, amount)
+func emit_fire_bullet(bullet: Resource, origin: Vector2, target: Vector2, amount: int = 1) -> void:
+	emit_signal("fire_bullet", bullet, origin, target, amount)
 
 
 func emit_base_hit(damage: float) -> void:

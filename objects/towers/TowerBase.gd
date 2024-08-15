@@ -5,7 +5,7 @@ class_name TowerBase
 export (bool) var is_enabled: bool = true
 export (bool) var show_radius: bool = false
 export (float) var fire_rate: float = 0.5
-export (int) var bullet_type: int = 0
+export (Resource) var bullet: Resource = null
 export (float) var cost: float = 5.0
 
 
@@ -28,7 +28,7 @@ func _process(delta) -> void:
 	if _timer >= fire_rate:
 		_timer = 0
 		var enemy = _find_closest_enemy()
-		EventBus.emit_tower_fired(position + $Sprite.position, enemy.global_position, bullet_type)
+		EventBus.emit_fire_bullet(bullet, position + $Sprite.position, enemy.global_position)
 
 
 func _find_closest_enemy() -> Node2D:

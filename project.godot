@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node2D",
+"class": "AbilityBase",
+"language": "GDScript",
+"path": "res://objects/abilities/AbilityBase.gd"
+}, {
+"base": "Node2D",
 "class": "BulletBase",
 "language": "GDScript",
 "path": "res://objects/bullets/BulletBase.gd"
@@ -38,14 +43,21 @@ _global_script_classes=[ {
 "class": "TowerBase",
 "language": "GDScript",
 "path": "res://objects/towers/TowerBase.gd"
+}, {
+"base": "Node",
+"class": "WaveData",
+"language": "GDScript",
+"path": "res://common/wave_data.gd"
 } ]
 _global_script_class_icons={
+"AbilityBase": "",
 "BulletBase": "",
 "Common": "",
 "DamageOverTimeEffect": "",
 "EnemyBase": "",
 "SlowEffect": "",
-"TowerBase": ""
+"TowerBase": "",
+"WaveData": ""
 }
 
 [application]

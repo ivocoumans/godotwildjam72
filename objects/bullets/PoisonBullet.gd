@@ -1,9 +1,9 @@
 extends BulletBase
 
 
-var tick_damage: float = 3.0
-var tick_duration: float = 0.7
-var ticks: float = 3
+export (float) var tick_damage: float = 3.0
+export (float) var tick_duration: float = 0.7
+export (float) var ticks: float = 3
 
 
 func _apply_effect(body: PhysicsBody2D) -> void:

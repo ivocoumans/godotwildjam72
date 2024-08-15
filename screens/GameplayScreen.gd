@@ -6,19 +6,26 @@ const FreezeTower: PackedScene = preload("res://objects/towers/FreezeTower.tscn"
 const SnareTower: PackedScene = preload("res://objects/towers/SnareTower.tscn")
 const PoisonTower: PackedScene = preload("res://objects/towers/PoisonTower.tscn")
 
+const ExplosiveAbility: PackedScene = preload("res://objects/abilities/ExplosiveAbility.tscn")
+const FreezeAbility: PackedScene = preload("res://objects/abilities/FreezeAbility.tscn")
+const SnareAbility: PackedScene = preload("res://objects/abilities/SnareAbility.tscn")
+const PoisonAbility: PackedScene = preload("res://objects/abilities/PoisonAbility.tscn")
+
 
 const GRID_SIZE: int = 32
 const SCREEN_EDGE: int = 700
 
 
 var _health: float = 10.0
-var _gold: float = 0.0
+var _gold: float = 20.0
 var _enemies: int = 0
-var _wave: int = 0
+var _level: int = 0
+var _wave: int = -1
 var _is_build_mode: bool = false
 var _active_tower: int = -1
 var _active_ability: int = -1
-var _wave_timer: float = 0
+var _spawn_timer: float = 0
+var _enemies_to_spawn: Array = []
 
 
 onready var viewport_size: Vector2 = get_viewport().size
@@ -51,10 +58,19 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	_process_camera(delta)
 	_process_building(delta)
-	_wave_timer += delta
-	if _wave_timer > 10:
-		_wave_timer = 0
-		_spawn_wave()
+	
+	# spawn
+	_spawn_timer += delta
+	if _spawn_timer >= 0.5:
+		_spawn_timer = 0
+		var enemies_to_remove: Array = []
+		for enemy in _enemies_to_spawn:
+			enemy.delay -= 0.5
+			if enemy.delay <= 0:
+				enemies_to_remove.append(enemy)
+				_spawn_enemies(enemy.type, enemy.amount)
+		for enemy in enemies_to_remove:
+			_enemies_to_spawn.remove(_enemies_to_spawn.find(enemy))
 
 
 func _ready_ui() -> void:
@@ -65,7 +81,7 @@ func _ready_ui() -> void:
 
 
 func _ready_events() -> void:
-	var _error = EventBus.connect("tower_fired", self, "_on_EventBus_tower_fired")
+	var _error = EventBus.connect("fire_bullet", self, "_on_EventBus_fire_bullet")
 	_error = EventBus.connect("base_hit", self, "_on_EventBus_base_hit")
 	_error = EventBus.connect("enemy_killed", self, "_on_EventBus_enemy_killed")
 	_error = EventBus.connect("build_mode", self, "_on_EventBus_build_mode")
@@ -110,10 +126,14 @@ func _handle_input_ability(event: InputEvent) -> void:
 		return
 	
 	# activate ability
-	if event.is_action_pressed("ui_select"):
+	# TODO: variable cost from ability definition
+	if event.is_action_pressed("ui_select") and _gold >= 10:
 		var mouse_position: Vector2 = _get_mouse_position()
 		if mouse_position.y <= SCREEN_EDGE:
-			_spawn_bullets(mouse_position - Vector2(50, 50), mouse_position, _active_ability, 1)
+			var ability = _get_ability_instance(_active_ability)
+			ability.activate(mouse_position - Vector2(50, 50), mouse_position)
+			_gold -= ability.cost
+			ui.set_gold(_gold)
 		
 
 
@@ -153,13 +173,17 @@ func _process_building(_delta: float) -> void:
 
 
 func _spawn_wave() -> void:
-	# TODO
 	_wave += 1
-	_spawn_enemies(0, 15, 250)
-	_spawn_enemies(1, 5, 0)
-	_spawn_enemies(2, 3, -50)
-	_spawn_enemies(3, 1, -250)
-	ui.set_wave(_wave)
+	_enemies_to_spawn = []
+	var wave_data = WaveData.get_wave_data(_level, _wave)
+	if wave_data.empty():
+		return
+	for group_key in wave_data:
+		var group = wave_data[group_key]
+		for enemy_key in group:
+			var enemy = group[enemy_key]
+			_enemies_to_spawn.append(enemy)
+	ui.set_wave(_wave + 1)
 
 
 func _spawn_enemies(type: int = 0, amount: int = 1, offset: float = 0) -> void:
@@ -182,8 +206,8 @@ func _is_tile_restricted(x: int, y: int) -> bool:
 	return false
 
 
-func _spawn_bullets(position: Vector2, destination: Vector2, type: int, amount: int = 1) -> void:
-	var spawned_bullets: Array = bullet_spawner.spawn_bullets(position, destination, type, amount)
+func _spawn_bullets(bullet: Resource, origin: Vector2, target: Vector2, amount: int = 1) -> void:
+	var spawned_bullets: Array = bullet_spawner.spawn_bullets2(bullet, origin, target, amount)
 	for bullet in spawned_bullets:
 		bullets.add_child(bullet)
 
@@ -204,8 +228,19 @@ func _get_tower_instance(tower: int = 0) -> Node:
 	return Tower.instance()
 
 
-func _on_EventBus_tower_fired(position: Vector2, destination: Vector2, type: int, amount: int = 1) -> void:
-	_spawn_bullets(position, destination, type, amount)
+func _get_ability_instance(ability: int = 0) -> Node:
+	var Ability: PackedScene = ExplosiveAbility
+	if ability == 1:
+		Ability = FreezeAbility
+	elif ability == 2:
+		Ability = SnareAbility
+	elif ability == 3:
+		Ability = PoisonAbility
+	return Ability.instance()
+
+
+func _on_EventBus_fire_bullet(bullet: Resource, origin: Vector2, target: Vector2, amount: int = 1) -> void:
+	_spawn_bullets(bullet, origin, target, amount)
 
 
 func _on_EventBus_base_hit(damage: float) -> void:
@@ -219,6 +254,7 @@ func _on_EventBus_base_hit(damage: float) -> void:
 		_enemies = 0
 		# TODO: wave cleared
 		print("Wave cleared")
+		_spawn_wave()
 	ui.set_health(_health)
 	ui.set_enemies(_enemies)
 
@@ -230,6 +266,7 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 		_enemies = 0
 		# TODO: wave cleared
 		print("Wave cleared") 
+		_spawn_wave()
 	ui.set_gold(_gold)
 	ui.set_enemies(_enemies)
 

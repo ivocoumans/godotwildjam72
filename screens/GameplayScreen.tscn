@@ -45,17 +45,17 @@ tile_data = PoolIntArray( 131082, 1, 0, 131083, 1, 0, 131084, 1, 0, 131085, 1, 0
 position = Vector2( 960, 288 )
 show_radius = true
 
+[node name="ExplosiveTower2" parent="Node2D/Towers" instance=ExtResource( 1 )]
+position = Vector2( 608, 512 )
+
 [node name="FreezeTower" parent="Node2D/Towers" instance=ExtResource( 9 )]
-position = Vector2( 416, 512 )
-show_radius = true
+position = Vector2( 512, 512 )
 
 [node name="SnareTower" parent="Node2D/Towers" instance=ExtResource( 10 )]
-position = Vector2( 672, 512 )
-show_radius = true
+position = Vector2( 704, 512 )
 
 [node name="PoisonTower" parent="Node2D/Towers" instance=ExtResource( 8 )]
-position = Vector2( 544, 512 )
-show_radius = true
+position = Vector2( 416, 512 )
 
 [node name="Enemies" type="YSort" parent="Node2D"]
 
