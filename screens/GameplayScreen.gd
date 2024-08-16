@@ -11,13 +11,19 @@ const FreezeAbility: PackedScene = preload("res://objects/abilities/FreezeAbilit
 const SnareAbility: PackedScene = preload("res://objects/abilities/SnareAbility.tscn")
 const PoisonAbility: PackedScene = preload("res://objects/abilities/PoisonAbility.tscn")
 
+const SfxHornNight: Resource = preload("res://assets/audio/sfx/horn_night.wav")
+const SfxHornDay: Resource = preload("res://assets/audio/sfx/horn_day.wav")
+const SfxBuild: Resource = preload("res://assets/audio/sfx/build.wav")
+const SfxGold: Resource = preload("res://assets/audio/sfx/gold.wav")
+const SfxDeath: Resource = preload("res://assets/audio/sfx/death.wav")
+
 
 const GRID_SIZE: int = 32
 const SCREEN_EDGE: int = 700
 
 
 var _health: float = 10.0
-var _gold: float = 20.0
+var _gold: float = 200.0
 var _enemies: int = 0
 var _level: int = 0
 var _wave: int = -1
@@ -42,12 +48,15 @@ onready var bullet_spawner: Node = $Node2D/BulletSpawner
 onready var placeholder: Node2D = $Node2D/BuildPlaceholder
 onready var ui: CanvasLayer = $UI
 onready var night_shader: ColorRect = $Node2D/CanvasLayer/ColorRect
+onready var timer: Timer = $Timer
 
 
 func _ready() -> void:
 	camera.position.y = 480
 	_ready_ui()
 	_ready_events()
+	BGM.play_day()
+	SFX.enabled(true)
 
 
 func _input(event: InputEvent) -> void:
@@ -121,18 +130,19 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 		var tower = _get_tower_instance(_active_tower)
 		tower.position = placeholder.position
 		towers.add_child(tower)
+		SFX.play(SfxBuild)
+		SFX.play(SfxGold)
 
 
 func _handle_input_ability(event: InputEvent) -> void:
-	if _is_build_mode or _active_ability < 0:
+	if _is_daytime or _is_build_mode or _active_ability < 0:
 		return
 	
 	# activate ability
-	# TODO: variable cost from ability definition
-	if event.is_action_pressed("ui_select") and _gold >= 10:
+	var ability = _get_ability_instance(_active_ability)
+	if event.is_action_pressed("ui_select") and _gold >= ability.cost:
 		var mouse_position: Vector2 = _get_mouse_position()
 		if mouse_position.y <= SCREEN_EDGE:
-			var ability = _get_ability_instance(_active_ability)
 			ability.activate(mouse_position - Vector2(50, 50), mouse_position)
 			_gold -= ability.cost
 			ui.set_gold(_gold)
@@ -185,7 +195,7 @@ func _spawn_wave() -> void:
 		for enemy_key in group:
 			var enemy = group[enemy_key]
 			_enemies_to_spawn.append(enemy)
-	ui.set_wave(_wave + 1)
+	ui.set_wave(_wave)
 
 
 func _spawn_enemies(type: int = 0, amount: int = 1, offset: float = 0) -> void:
@@ -245,6 +255,9 @@ func _set_daytime() -> void:
 	_is_daytime = true
 	ui.set_daytime()
 	night_shader.visible = false
+	BGM.stop()
+	SFX.play(SfxHornDay)
+	timer.start()
 
 
 func _on_EventBus_fire_bullet(bullet: Resource, origin: Vector2, target: Vector2, amount: int = 1) -> void:
@@ -260,7 +273,6 @@ func _on_EventBus_base_hit(damage: float) -> void:
 		print("Game over")
 	elif _enemies <= 0:
 		_enemies = 0
-		# TODO: wave cleared
 		print("Wave cleared")
 		_set_daytime()
 	ui.set_health(_health)
@@ -272,11 +284,11 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 	_gold += add_gold
 	if _enemies <= 0:
 		_enemies = 0
-		# TODO: wave cleared
 		print("Wave cleared") 
 		_set_daytime()
 	ui.set_gold(_gold)
 	ui.set_enemies(_enemies)
+	SFX.play(SfxDeath)
 
 
 func _on_EventBus_build_mode(tower: int) -> void:
@@ -305,7 +317,24 @@ func _on_EventBus_active_ability(ability: int) -> void:
 
 
 func _on_EventBus_end_day() -> void:
+	# turn off build mode
+	_is_build_mode = false
+	placeholder.visible = false
+	
+	# enter night time
 	_is_daytime = false
 	night_shader.visible = true
-	_spawn_wave()
+	BGM.stop()
+	SFX.play(SfxHornNight)
+	
+	# start timer for music and wave spawn
+	timer.start()
+
+
+func _on_Timer_timeout():
+	if _is_daytime:
+		BGM.play_day()
+	else:
+		BGM.play_night()
+		_spawn_wave()
 

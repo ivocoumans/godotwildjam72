@@ -1,12 +1,14 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://objects/abilities/AbilityBase.tscn" type="PackedScene" id=1]
 [ext_resource path="res://objects/abilities/PoisonAbility.gd" type="Script" id=2]
 [ext_resource path="res://objects/bullets/PoisonBullet.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/audio/sfx/poison.wav" type="AudioStream" id=4]
 
 [node name="PoisonAbility" type="Node2D"]
 script = ExtResource( 2 )
 cost = 20.0
 bullet = ExtResource( 3 )
+sfx = ExtResource( 4 )
 
 [node name="AbilityBase" parent="." instance=ExtResource( 1 )]

@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://objects/towers/TowerBase.tscn" type="PackedScene" id=1]
-[ext_resource path="res://assets/tower_ice.png" type="Texture" id=2]
+[ext_resource path="res://assets/graphics/objects/tower_ice.png" type="Texture" id=2]
 [ext_resource path="res://objects/towers/FreezeTower.gd" type="Script" id=3]
 [ext_resource path="res://objects/bullets/FreezeBullet.tscn" type="PackedScene" id=4]
 

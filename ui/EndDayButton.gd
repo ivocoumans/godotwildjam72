@@ -1,8 +1,8 @@
 extends Button
 
 
-const sun_texture = preload("res://assets/sun.png")
-const moon_texture = preload("res://assets/moon.png")
+const sun_texture = preload("res://assets/graphics/objects/sun.png")
+const moon_texture = preload("res://assets/graphics/objects/moon.png")
 
 
 var _current_texture = 0

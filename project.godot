@@ -69,6 +69,8 @@ boot_splash/show_image=false
 [autoload]
 
 EventBus="*res://common/event_bus.gd"
+SFX="*res://common/SFX.gd"
+BGM="*res://common/BGM.tscn"
 
 [display]
 
