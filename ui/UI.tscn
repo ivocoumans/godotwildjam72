@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://ui/UI.gd" type="Script" id=1]
 [ext_resource path="res://assets/tower_ice.png" type="Texture" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://assets/bullet_snare.png" type="Texture" id=8]
 [ext_resource path="res://assets/bullet_poison.png" type="Texture" id=9]
 [ext_resource path="res://assets/tower_fire.png" type="Texture" id=10]
+[ext_resource path="res://ui/EndDayButton.tscn" type="PackedScene" id=11]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -169,6 +170,14 @@ margin_right = 256.0
 texture = ExtResource( 9 )
 label_text = "Poison"
 
+[node name="Control" type="Control" parent="Control"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -64.0
+
+[node name="EndDayButton" parent="Control/Control" instance=ExtResource( 11 )]
+
 [connection signal="pressed" from="Control/BuildBar/BuildFireButton" to="." method="_on_BuildFireButton_pressed"]
 [connection signal="pressed" from="Control/BuildBar/BuildIceButton" to="." method="_on_BuildIceButton_pressed"]
 [connection signal="pressed" from="Control/BuildBar/BuildSnareButton" to="." method="_on_BuildSnareButton_pressed"]
@@ -177,3 +186,4 @@ label_text = "Poison"
 [connection signal="pressed" from="Control/AbilityBar/IceAbilityButton" to="." method="_on_IceAbilityButton_pressed"]
 [connection signal="pressed" from="Control/AbilityBar/SnareAbilityButton" to="." method="_on_SnareAbilityButton_pressed"]
 [connection signal="pressed" from="Control/AbilityBar/PoisonAbilityButton" to="." method="_on_PoisonAbilityButton_pressed"]
+[connection signal="pressed" from="Control/Control/EndDayButton" to="." method="_on_EndDayButton_pressed"]

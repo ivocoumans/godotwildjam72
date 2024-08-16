@@ -6,6 +6,7 @@ signal base_hit(damage)
 signal enemy_killed(gold)
 signal build_mode(tower)
 signal active_ability(ability)
+signal end_day()
 
 
 func emit_fire_bullet(bullet: Resource, origin: Vector2, target: Vector2, amount: int = 1) -> void:
@@ -26,4 +27,8 @@ func emit_build_mode(tower: int) -> void:
 
 func emit_active_ability(ability: int) -> void:
 	emit_signal("active_ability", ability)
+
+
+func emit_end_day() -> void:
+	emit_signal("end_day")
 

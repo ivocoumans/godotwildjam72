@@ -26,6 +26,7 @@ var _active_tower: int = -1
 var _active_ability: int = -1
 var _spawn_timer: float = 0
 var _enemies_to_spawn: Array = []
+var _is_daytime: bool = true
 
 
 onready var viewport_size: Vector2 = get_viewport().size
@@ -40,13 +41,13 @@ onready var bullets: Node = $Node2D/Bullets
 onready var bullet_spawner: Node = $Node2D/BulletSpawner
 onready var placeholder: Node2D = $Node2D/BuildPlaceholder
 onready var ui: CanvasLayer = $UI
+onready var night_shader: ColorRect = $Node2D/CanvasLayer/ColorRect
 
 
 func _ready() -> void:
 	camera.position.y = 480
 	_ready_ui()
 	_ready_events()
-	_spawn_wave()
 
 
 func _input(event: InputEvent) -> void:
@@ -86,6 +87,7 @@ func _ready_events() -> void:
 	_error = EventBus.connect("enemy_killed", self, "_on_EventBus_enemy_killed")
 	_error = EventBus.connect("build_mode", self, "_on_EventBus_build_mode")
 	_error = EventBus.connect("active_ability", self, "_on_EventBus_active_ability")
+	_error = EventBus.connect("end_day", self, "_on_EventBus_end_day")
 
 
 func _handle_input_common(event: InputEvent) -> void:
@@ -239,6 +241,12 @@ func _get_ability_instance(ability: int = 0) -> Node:
 	return Ability.instance()
 
 
+func _set_daytime() -> void:
+	_is_daytime = true
+	ui.set_daytime()
+	night_shader.visible = false
+
+
 func _on_EventBus_fire_bullet(bullet: Resource, origin: Vector2, target: Vector2, amount: int = 1) -> void:
 	_spawn_bullets(bullet, origin, target, amount)
 
@@ -254,7 +262,7 @@ func _on_EventBus_base_hit(damage: float) -> void:
 		_enemies = 0
 		# TODO: wave cleared
 		print("Wave cleared")
-		_spawn_wave()
+		_set_daytime()
 	ui.set_health(_health)
 	ui.set_enemies(_enemies)
 
@@ -266,12 +274,14 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 		_enemies = 0
 		# TODO: wave cleared
 		print("Wave cleared") 
-		_spawn_wave()
+		_set_daytime()
 	ui.set_gold(_gold)
 	ui.set_enemies(_enemies)
 
 
 func _on_EventBus_build_mode(tower: int) -> void:
+	if !_is_daytime:
+		return
 	_is_build_mode = true
 	_active_tower = tower
 	
@@ -292,4 +302,10 @@ func _on_EventBus_active_ability(ability: int) -> void:
 	_active_ability = ability
 	_is_build_mode = false
 	placeholder.visible = false
+
+
+func _on_EventBus_end_day() -> void:
+	_is_daytime = false
+	night_shader.visible = true
+	_spawn_wave()
 

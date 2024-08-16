@@ -3,10 +3,10 @@ class_name EnemyBase
 
 
 const COLOR_NORMAL = Color8(255, 255, 255)
-const COLOR_FIRE = Color8(172, 50, 50)
-const COLOR_FREEZE = Color8(91, 110, 225)
-const COLOR_SNARE = Color8(252, 242, 54)
-const COLOR_POISON = Color8(118, 66, 138)
+const COLOR_FIRE = Color8(255, 100, 50)
+const COLOR_FREEZE = Color8(75, 150, 255)
+const COLOR_SNARE = Color8(255, 255, 0)
+const COLOR_POISON = Color8(125, 0, 255)
 
 
 export (float) var health: float = 15.0
@@ -17,6 +17,9 @@ export (float) var speed: float = 85.0 setget set_speed, get_speed
 
 var _slow_effects: Array = []
 var _dot_effects: Array = []
+var _previous_position: Vector2 = Vector2.ZERO
+var _direction: Vector2 = Vector2.RIGHT
+var _animation_timer: float = 0
 
 
 onready var sprite: Sprite = $Sprite
@@ -37,6 +40,12 @@ func set_speed(new_value: float) -> void:
 func _process(delta: float) -> void:
 	_process_slow(delta)
 	_process_damage(delta)
+	_process_animation(delta)
+
+
+func _play_if_not_playing(animation: String) -> void:
+	if $AnimationPlayer.current_animation != animation:
+		$AnimationPlayer.play(animation)
 
 
 func _process_slow(delta: float) -> void:
@@ -74,13 +83,47 @@ func _process_damage(delta: float) -> void:
 		_set_color()
 
 
+func _process_animation(delta: float) -> void:
+	if health <= 0:
+		return
+	
+	if _previous_position == Vector2.ZERO:
+		_previous_position = position
+		return
+	
+	_animation_timer += delta
+	if _animation_timer < 0.2:
+		return
+	
+	_animation_timer = 0
+	
+	if position.y - _previous_position.y < -1:
+		_play_if_not_playing("walk_up")
+	elif position.y - _previous_position.y > 1:
+		_play_if_not_playing("walk_down")
+	elif position.x - _previous_position.x < -1:
+		_play_if_not_playing("walk_left")
+	elif position.x - _previous_position.x > 1:
+		_play_if_not_playing("walk_right")
+
+	_previous_position = position
+
+
 func take_damage(add_damage: float) -> void:
+	if health <= 0:
+		return
+	
 	health -= add_damage
 	if health <= 0:
 		health = 0
 		EventBus.emit_enemy_killed(gold)
-		queue_free()
+		var _error = $AnimationPlayer.connect("animation_finished", self, "_on_AnimationPlayer_animation_finished")
+		$AnimationPlayer.play("death")
 	_set_color()
+
+
+func _on_AnimationPlayer_animation_finished(_name) -> void:
+	queue_free()
 
 
 func take_damage_over_time(tick_damage: float, tick_duration: float, ticks: float) -> void:

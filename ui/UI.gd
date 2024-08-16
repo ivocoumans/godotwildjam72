@@ -5,6 +5,7 @@ onready var health: Label = $InfoBar/HBoxContainer/HealthContainer/HealthValueLa
 onready var gold: Label = $InfoBar/HBoxContainer/GoldContainer/GoldValueLabel
 onready var enemies: Label = $InfoBar/HBoxContainer/EnemiesContainer/EnemiesValueLabel
 onready var wave: Label = $InfoBar/HBoxContainer/WaveContainer/WaveValueLabel
+onready var end_day: Button = $Control/Control/EndDayButton
 
 
 func set_health(new_health: float) -> void:
@@ -21,6 +22,12 @@ func set_enemies(new_enemies: float) -> void:
 
 func set_wave(new_wave: float) -> void:
 	wave.text = str(new_wave)
+
+
+func set_daytime() -> void:
+	if end_day.is_enabled():
+		return
+	end_day.toggle_texture()
 
 
 func _on_BuildFireButton_pressed():
@@ -53,4 +60,11 @@ func _on_SnareAbilityButton_pressed():
 
 func _on_PoisonAbilityButton_pressed():
 	EventBus.emit_active_ability(3)
+
+
+func _on_EndDayButton_pressed():
+	if !end_day.is_enabled():
+		return
+	EventBus.emit_end_day()
+	end_day.toggle_texture()
 

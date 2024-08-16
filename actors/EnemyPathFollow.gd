@@ -11,6 +11,11 @@ func _process(delta: float) -> void:
 			enemy_lead_path_follow.queue_free()
 		queue_free()
 		return
+	if enemy.health <= 0:
+		if is_instance_valid(enemy_lead_path_follow):
+			enemy_lead_path_follow.queue_free()
+		return
+	
 	offset += enemy.speed * delta
 	enemy.position = global_position
 	if offset >= 1850:
