@@ -109,8 +109,7 @@ tracks/0/keys = {
 [node name="FastEnemy" type="KinematicBody2D"]
 position = Vector2( 1, 0 )
 script = ExtResource( 3 )
-health = 10.0
-gold = 2.0
+gold = 4.0
 speed = 100.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://ui/UI.gd" type="Script" id=1]
 [ext_resource path="res://assets/graphics/objects/tower_ice.png" type="Texture" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://assets/graphics/objects/bullet_poison.png" type="Texture" id=9]
 [ext_resource path="res://assets/graphics/objects/tower_fire.png" type="Texture" id=10]
 [ext_resource path="res://ui/EndDayButton.tscn" type="PackedScene" id=11]
+[ext_resource path="res://ui/modals/Modal.tscn" type="PackedScene" id=12]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -178,6 +179,26 @@ margin_left = -64.0
 
 [node name="EndDayButton" parent="Control/Control" instance=ExtResource( 11 )]
 
+[node name="Modals" type="Node" parent="."]
+
+[node name="GameStartModal" parent="Modals" instance=ExtResource( 12 )]
+visible = false
+title_text = "Darkness Falls"
+description_text = "Build towers to keep enemies from reaching the end, and cast abilities during battle to prevent getting overwhelmed!"
+button_text = "Start"
+
+[node name="GameEndModal" parent="Modals" instance=ExtResource( 12 )]
+visible = false
+title_text = "Game Completed"
+description_text = "Thank you for playing!"
+button_text = "Play Again"
+
+[node name="GameOverModal" parent="Modals" instance=ExtResource( 12 )]
+visible = false
+title_text = "Game Over!"
+description_text = "Thank you for playing!"
+button_text = "Play Again"
+
 [connection signal="pressed" from="Control/BuildBar/BuildFireButton" to="." method="_on_BuildFireButton_pressed"]
 [connection signal="pressed" from="Control/BuildBar/BuildIceButton" to="." method="_on_BuildIceButton_pressed"]
 [connection signal="pressed" from="Control/BuildBar/BuildSnareButton" to="." method="_on_BuildSnareButton_pressed"]
@@ -187,3 +208,6 @@ margin_left = -64.0
 [connection signal="pressed" from="Control/AbilityBar/SnareAbilityButton" to="." method="_on_SnareAbilityButton_pressed"]
 [connection signal="pressed" from="Control/AbilityBar/PoisonAbilityButton" to="." method="_on_PoisonAbilityButton_pressed"]
 [connection signal="pressed" from="Control/Control/EndDayButton" to="." method="_on_EndDayButton_pressed"]
+[connection signal="button_pressed" from="Modals/GameStartModal" to="." method="_on_GameStartModal_button_pressed"]
+[connection signal="button_pressed" from="Modals/GameEndModal" to="." method="_on_GameEndModal_button_pressed"]
+[connection signal="button_pressed" from="Modals/GameOverModal" to="." method="_on_GameEndModal_button_pressed"]

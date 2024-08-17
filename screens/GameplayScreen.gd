@@ -20,10 +20,11 @@ const SfxDeath: Resource = preload("res://assets/audio/sfx/death.wav")
 
 const GRID_SIZE: int = 32
 const SCREEN_EDGE: int = 700
+const START_GOLD = 70.0
 
 
 var _health: float = 10.0
-var _gold: float = 200.0
+var _gold: float = START_GOLD
 var _enemies: int = 0
 var _level: int = 0
 var _wave: int = -1
@@ -57,6 +58,7 @@ func _ready() -> void:
 	_ready_events()
 	BGM.play_day()
 	SFX.enabled(true)
+	ui.show_game_start()
 
 
 func _input(event: InputEvent) -> void:
@@ -99,11 +101,9 @@ func _ready_events() -> void:
 	_error = EventBus.connect("end_day", self, "_on_EventBus_end_day")
 
 
-func _handle_input_common(event: InputEvent) -> void:
+func _handle_input_common(_event: InputEvent) -> void:
 	if _is_build_mode:
 		return
-	if event.is_action_pressed("ui_cancel"):
-		get_tree().quit()
 
 
 func _handle_input_build_mode(event: InputEvent) -> void:
@@ -116,7 +116,7 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 		placeholder.visible = false
 	
 	# build tower
-	elif event.is_action_pressed("ui_select") and placeholder.visible and placeholder.cost <= _gold:
+	elif event.is_action_pressed("ui_select") and placeholder.visible:
 		var mouse_position: Vector2 = _get_mouse_position()
 		if mouse_position.y > SCREEN_EDGE:
 			return
@@ -125,9 +125,13 @@ func _handle_input_build_mode(event: InputEvent) -> void:
 		var y: int = int(placeholder.position.y / GRID_SIZE)
 		if _is_tile_restricted(x, y):
 			return
-		_gold -= placeholder.cost
-		ui.set_gold(_gold)
+		
 		var tower = _get_tower_instance(_active_tower)
+		if tower.cost > _gold:
+			return
+		
+		_gold -= tower.cost
+		ui.set_gold(_gold)
 		tower.position = placeholder.position
 		towers.add_child(tower)
 		SFX.play(SfxBuild)
@@ -215,6 +219,10 @@ func _is_tile_restricted(x: int, y: int) -> bool:
 		for y_offset in 3:
 			if road.get_cell(x - 1 + x_offset, y - 1 + y_offset) >= 0:
 				return true
+			for child in towers.get_children():
+				var new_position: Vector2 = Vector2((x - 1 + x_offset) * GRID_SIZE, (y - 1 + y_offset) * GRID_SIZE)
+				if child.position == new_position:
+					return true
 	return false
 
 
@@ -269,12 +277,12 @@ func _on_EventBus_base_hit(damage: float) -> void:
 	_enemies -= 1
 	if _health <= 0:
 		_health = 0
-		# TODO: game over
-		print("Game over")
+		ui.show_game_over()
 	elif _enemies <= 0:
 		_enemies = 0
-		print("Wave cleared")
 		_set_daytime()
+		if !WaveData.has_next_wave(_level, _wave + 1):
+			ui.show_game_end()
 	ui.set_health(_health)
 	ui.set_enemies(_enemies)
 
@@ -284,8 +292,9 @@ func _on_EventBus_enemy_killed(add_gold: float) -> void:
 	_gold += add_gold
 	if _enemies <= 0:
 		_enemies = 0
-		print("Wave cleared") 
 		_set_daytime()
+		if !WaveData.has_next_wave(_level, _wave + 1):
+			ui.show_game_end()
 	ui.set_gold(_gold)
 	ui.set_enemies(_enemies)
 	SFX.play(SfxDeath)
@@ -337,4 +346,47 @@ func _on_Timer_timeout():
 	else:
 		BGM.play_night()
 		_spawn_wave()
+
+
+func _on_UI_start_game():
+	pass # Replace with function body.
+
+
+func _on_UI_restart_game():
+	_health = 10.0
+	_gold = START_GOLD
+	_enemies = 0
+	_level = 0
+	_wave = -1
+	_is_build_mode = false
+	_active_tower = -1
+	_active_ability = -1
+	_spawn_timer = 0
+	_enemies_to_spawn = []
+	_is_daytime = true
+	
+	camera.position.y = 480
+
+	_ready_ui()
+	
+	ui.set_daytime()
+	night_shader.visible = false
+	BGM.stop()
+	
+	placeholder.visible = false
+	
+	BGM.play_day()
+	SFX.enabled(true)
+	
+	for child in towers.get_children():
+		towers.remove_child(child)
+		child.queue_free()
+	
+	for child in enemies.get_children():
+		towers.remove_child(child)
+		child.queue_free()
+	
+	for child in bullets.get_children():
+		towers.remove_child(child)
+		child.queue_free()
 

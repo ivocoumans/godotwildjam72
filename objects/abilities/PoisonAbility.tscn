@@ -7,7 +7,7 @@
 
 [node name="PoisonAbility" type="Node2D"]
 script = ExtResource( 2 )
-cost = 20.0
+cost = 40.0
 bullet = ExtResource( 3 )
 sfx = ExtResource( 4 )
 

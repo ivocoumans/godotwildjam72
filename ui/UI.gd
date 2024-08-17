@@ -1,6 +1,10 @@
 extends CanvasLayer
 
 
+signal start_game()
+signal restart_game()
+
+
 const SfxUI: Resource = preload("res://assets/audio/sfx/ui.wav")
 
 
@@ -31,6 +35,18 @@ func set_daytime() -> void:
 	if end_day.is_enabled():
 		return
 	end_day.toggle_texture()
+
+
+func show_game_start() -> void:
+	$Modals/GameStartModal.show()
+
+
+func show_game_end() -> void:
+	$Modals/GameEndModal.show()
+
+
+func show_game_over() -> void:
+	$Modals/GameOverModal.show()
 
 
 func _on_BuildFireButton_pressed():
@@ -95,4 +111,15 @@ func _on_EndDayButton_pressed():
 	EventBus.emit_end_day()
 	end_day.toggle_texture()
 	SFX.play(SfxUI)
+
+
+func _on_GameStartModal_button_pressed():
+	emit_signal("start_game")
+	$Modals/GameStartModal.hide()
+
+
+func _on_GameEndModal_button_pressed():
+	emit_signal("restart_game")
+	$Modals/GameEndModal.hide()
+	$Modals/GameOverModal.hide()
 

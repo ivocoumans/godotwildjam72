@@ -9,7 +9,7 @@
 script = ExtResource( 3 )
 fire_rate = 2.5
 bullet = ExtResource( 4 )
-cost = 50.0
+cost = 80.0
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 16, 16 )

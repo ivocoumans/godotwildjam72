@@ -39,9 +39,6 @@ tile_data = PoolIntArray( 131082, 4, 0, 131083, 4, 1, 131084, 4, 1, 131085, 4, 1
 
 [node name="Towers" type="YSort" parent="Node2D"]
 
-[node name="ExplosiveTower" parent="Node2D/Towers" instance=ExtResource( 1 )]
-position = Vector2( 960, 288 )
-
 [node name="Enemies" type="YSort" parent="Node2D"]
 
 [node name="Bullets" type="YSort" parent="Node2D"]
@@ -71,4 +68,6 @@ color = Color( 0.196078, 0.196078, 0.196078, 0.392157 )
 wait_time = 3.0
 one_shot = true
 
+[connection signal="restart_game" from="UI" to="." method="_on_UI_restart_game"]
+[connection signal="start_game" from="UI" to="." method="_on_UI_start_game"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
